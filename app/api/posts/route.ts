@@ -5,7 +5,7 @@ import clientPromise from "../../../lib/mongo"
 export async function POST(request: NextRequest) {
     const client = await clientPromise;
     const db = client.db("posts");
-    const { title, content } = await request.json()
+    const { title, content} = await request.json()
 
     const post = await db.collection("posts").insertOne({
       title,
