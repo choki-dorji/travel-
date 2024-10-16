@@ -2,6 +2,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "../../../../lib/mongo";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+// JWT secret key
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key"; // Ideally store this in environment variables
 
 // Function to handle user login
 export async function POST(request: NextRequest) {
@@ -27,6 +31,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
-    // If credentials are correct, return success response
-    return NextResponse.json({ message: "Login successful", email }, { status: 200 });
+    // If credentials are correct, generate a JWT token
+    const token = jwt.sign(
+        { email: user.email }, // You can include other user info as needed
+        JWT_SECRET,
+        { expiresIn: "1h" } // Token expires in 1 hour
+    );
+
+    // Return the JWT token in the response
+    return NextResponse.json({ message: "Login successful", token }, { status: 200 });
 }
